@@ -1,0 +1,66 @@
+{
+  "name": "@fungi.computer/cordyceps",
+  "version": "0.2.1",
+  "private": false,
+  "description": "Cloudflare computerd 0.2.1 for Local and the Computer container",
+  "type": "module",
+  "exports": {
+    "./cli": {
+      "types": "./dist/computerd.d.cts",
+      "default": "./dist/computerd.cjs"
+    }
+  },
+  "files": [
+    "dist/computerd.cjs",
+    "dist/computerd.d.cts",
+    "README.md",
+    "LICENSE",
+    "upstream/LICENSE",
+    "upstream/PROVENANCE.md"
+  ],
+  "scripts": {
+    "lint": "../../node_modules/.bin/eslint src scripts test --max-warnings=0 && ../../node_modules/.bin/oxlint --config ../../oxlint.config.ts --deny-warnings src scripts test",
+    "build": "node scripts/build.mjs",
+    "test": "pnpm --dir upstream/dofs test && node --test test/computerd-bundle.test.mjs && node --import tsx --test test/computerd-runner.test.mjs",
+    "format:check": "node ../../tooling/repository/scripts/format-package-check.mjs",
+    "lint:anti-slop": "node ../../tooling/repository/scripts/lint-package-anti-slop.mjs",
+    "pack": "mkdir -p ../../.botanical/cordyceps-pack && pnpm pack --pack-destination ../../.botanical/cordyceps-pack",
+    "stranger": "tsx ../../tooling/repository/src/artifacts/cli.ts --repo-root ../.. .",
+    "smoke": "node test/stranger/runtime.mjs",
+    "prepack": "node scripts/prepare-package.mjs",
+    "typecheck": "tsc --noEmit --strict --module NodeNext --moduleResolution NodeNext test/stranger/consumer.mts",
+    "docs": "node ../../apps/package-docs/scripts/build-sites.mjs --check cordyceps"
+  },
+  "devDependencies": {
+    "@platformatic/vfs": "0.4.0",
+    "@fungi.computer/capnweb": "workspace:*",
+    "esbuild": "0.28.2",
+    "ws": "8.18.0",
+    "typescript": "5.9.3"
+  },
+  "engines": {
+    "node": ">=22.13"
+  },
+  "botanical": {
+    "role": "runtime",
+    "operations": {
+      "lint": "required",
+      "typecheck": "required",
+      "build": "required",
+      "test": "required",
+      "docs": "required",
+      "pack": "required",
+      "smoke": "required",
+      "stranger": "required"
+    }
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fungi-computer/cordyceps.git"
+  },
+  "publishConfig": {
+    "directory": ".botanical/package",
+    "linkDirectory": false
+  }
+}

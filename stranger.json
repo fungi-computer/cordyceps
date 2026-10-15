@@ -1,0 +1,56 @@
+{
+  "expectedTarballFiles": [
+    "package/LICENSE",
+    "package/README.md",
+    "package/dist/computerd.cjs",
+    "package/dist/computerd.d.cts",
+    "package/package.json",
+    "package/upstream/LICENSE",
+    "package/upstream/PROVENANCE.md"
+  ],
+  "localDependencies": [],
+  "runtimeFixture": "test/stranger/runtime.mjs",
+  "typecheckFixture": "test/stranger/consumer.mts",
+  "consumerDevDependencies": {
+    "@types/node": "24.13.3"
+  },
+  "docs": {
+    "sigil": "list",
+    "home": {
+      "lead": "Run the vendored Computer daemon on Node with a host-selected backend.",
+      "example": {
+        "file": "home.ts",
+        "title": "Find the daemon CLI",
+        "caption": "Resolve the packed executable; starting it requires a mount and backend."
+      },
+      "ladder": {
+        "start": [
+          {
+            "title": "Quickstart",
+            "href": "/quickstart/",
+            "description": "Run the first example and read its host requirements."
+          }
+        ],
+        "tasks": [
+          {
+            "title": "Examples",
+            "href": "/examples/",
+            "description": "Read worked usage and the checks that exercise it."
+          }
+        ],
+        "reference": [
+          {
+            "title": "API reference",
+            "href": "/api/",
+            "description": "Find public entrypoints and their documented contracts."
+          },
+          {
+            "title": "Install",
+            "href": "/install/",
+            "description": "Check dependencies and runtime requirements."
+          }
+        ]
+      }
+    }
+  }
+}
