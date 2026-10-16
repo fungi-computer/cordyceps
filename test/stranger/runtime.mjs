@@ -3,7 +3,7 @@ import process from "node:process";
 import { setTimeout, clearTimeout } from "node:timers";
 import { spawn } from "node:child_process";
 import { once } from "node:events";
-import { mkdtemp, rm } from "node:fs/promises";
+import { access, mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -55,3 +55,17 @@ try {
   await settled;
   await rm(folder, { recursive: true, force: true });
 }
+
+// The packed engine source carries its pin, wrapper, license and builder; the
+// Computer image compiles it for its own platform.
+const { codexPatchPin } =
+  await import("@fungi.computer/cordyceps/native/apply-patch/pin.mjs");
+assert.equal(codexPatchPin.version, "rust-v0.154.0");
+for (const file of ["main.rs", "LICENSE.codex", "compile.mjs", "build.mjs"])
+  await access(
+    fileURLToPath(
+      import.meta.resolve(
+        `@fungi.computer/cordyceps/native/apply-patch/${file}`,
+      ),
+    ),
+  );

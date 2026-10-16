@@ -5,7 +5,7 @@
 // fuse-native stays external: the container supplies it; Local runs the shim
 // without a native dependency. The container's native privilege-phase module
 // is named only by path, in COMPUTER_RUNTIME_PRIVILEGE_MODULE (set by
-// runtimes/computer/container/computer-init.mjs), so runtime-phase.mjs's
+// packages/computer/container/computer-init.mjs), so runtime-phase.mjs's
 // import of it is a runtime expression esbuild leaves untouched; no bundler
 // plugin is needed to redirect it.
 import { rm, writeFile } from "node:fs/promises";
