@@ -15,13 +15,26 @@
     "package/native/apply-patch/notices.mjs",
     "package/native/apply-patch/pin.mjs",
     "package/native/apply-patch/toolchain.mjs",
+    "package/native/bwrap/Dockerfile",
+    "package/native/bwrap/README.md",
+    "package/native/bwrap/build.mjs",
+    "package/native/bwrap/linux-arm64.ini",
+    "package/native/bwrap/pin.mjs",
+    "package/native/bwrap/record.mjs",
+    "package/native/bwrap/vendor/LICENSE.sandbox-runtime",
+    "package/native/bwrap/vendor/README.md",
+    "package/native/bwrap/vendor/seccomp-unix-block.c",
     "package/package.json",
     "package/upstream/LICENSE",
     "package/upstream/PROVENANCE.md"
   ],
   "localDependencies": [],
   "runtimeFixture": "test/stranger/runtime.mjs",
-  "typecheckFixture": "test/stranger/consumer.mts",
+  "typechecks": [
+    {
+      "fixture": "test/stranger/consumer.mts"
+    }
+  ],
   "consumerDevDependencies": {
     "@types/node": "24.13.3"
   },

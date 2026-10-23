@@ -1,24 +1,27 @@
 {
   "name": "@fungi.computer/cordyceps",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "author": "Levi <levi@technomancy.dev>",
   "private": false,
   "description": "Cloudflare computerd 0.2.1 and the native apply_patch engine source for Local and the Computer container",
   "type": "module",
   "bin": {
-    "fungi-apply-patch-build": "native/apply-patch/build.mjs"
+    "fungi-apply-patch-build": "native/apply-patch/build.mjs",
+    "fungi-bwrap-build": "native/bwrap/build.mjs"
   },
   "exports": {
     "./cli": {
       "types": "./dist/computerd.d.cts",
       "default": "./dist/computerd.cjs"
     },
-    "./native/apply-patch/*": "./native/apply-patch/*"
+    "./native/apply-patch/*": "./native/apply-patch/*",
+    "./native/bwrap/*": "./native/bwrap/*"
   },
   "files": [
     "dist/computerd.cjs",
     "dist/computerd.d.cts",
     "native/apply-patch",
+    "native/bwrap",
     "README.md",
     "LICENSE",
     "upstream/LICENSE",
@@ -28,7 +31,7 @@
     "lint": "../../node_modules/.bin/eslint src scripts native test --max-warnings=0 && ../../node_modules/.bin/oxlint --config ../../oxlint.config.ts --deny-warnings src scripts native test",
     "build": "node scripts/build.mjs",
     "build:native": "node native/apply-patch/build.mjs --out native/bin",
-    "test": "pnpm --dir upstream/dofs test && node --test test/computerd-bundle.test.mjs test/native-patch-cache.test.mjs test/native-toolchain.test.mjs test/apply-patch.native.mjs && node --import tsx --test test/computerd-runner.test.mjs",
+    "test": "pnpm --dir upstream/dofs test && node --test test/computerd-bundle.test.mjs test/native-patch-cache.test.mjs test/native-toolchain.test.mjs test/bwrap-build.test.mjs test/apply-patch.native.mjs && node --import tsx --test test/computerd-runner.test.mjs",
     "format:check": "node ../../tooling/repository/scripts/format-package-check.mjs",
     "lint:anti-slop": "node ../../tooling/repository/scripts/lint-package-anti-slop.mjs",
     "pack": "mkdir -p ../../.botanical/cordyceps-pack && pnpm pack --pack-destination ../../.botanical/cordyceps-pack",
