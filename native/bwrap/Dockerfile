@@ -12,7 +12,7 @@ RUN if [ "$TARGET" = linux-arm64 ]; then \
     fi && apt-get update && apt-get install -y --no-install-recommends \
       build-essential ca-certificates curl xz-utils python3-pip ninja-build \
       pkg-config patchelf libcap-dev libseccomp-dev \
-      $(if [ "$TARGET" = linux-arm64 ]; then printf 'gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu libcap-dev:arm64'; fi) \
+      $(if [ "$TARGET" = linux-arm64 ]; then printf 'gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu libc6-dev-arm64-cross libcap-dev:arm64'; fi) \
     && rm -rf /var/lib/apt/lists/*
 # prefer_static is a maintained Meson option newer than Jammy's Meson.
 RUN pip3 install --no-cache-dir meson==1.10.2
