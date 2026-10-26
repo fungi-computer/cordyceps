@@ -114,7 +114,11 @@ const nativePathFlags = [
   .map((flag) => JSON.stringify(flag))
   .join(" ");
 ensureNativeHostToolchain({ toolchain: codexPatchPin.rustToolchain });
-const { command: cargoCommand, args: cargoArgs } = selectCargoInvocation({
+const {
+  command: cargoCommand,
+  args: cargoArgs,
+  env: cargoEnv,
+} = selectCargoInvocation({
   toolchain: codexPatchPin.rustToolchain,
   cargoArgs: [
     crossMac ? "zigbuild" : "build",
@@ -139,6 +143,7 @@ const cargo = spawnSync(cargoCommand, cargoArgs, {
   maxBuffer: 64 * 1024 * 1024,
   env: {
     ...process.env,
+    ...cargoEnv,
     CARGO_TARGET_DIR: resolve(scratch, "target"),
     CARGO_ENCODED_RUSTFLAGS: [
       `--remap-path-prefix=${scratch}=/build`,

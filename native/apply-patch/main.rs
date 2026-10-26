@@ -242,6 +242,20 @@ async fn run() -> Result<(), Box<dyn std::error::Error>> {
             }
         }
     }
+    // Inspection uses the same upstream parser and admission as application.
+    // The host uses these NUL-delimited paths to enforce protected mounts
+    // before offering an approval and again immediately before dispatch.
+    if std::env::args().nth(1).as_deref() == Some("--inspect") {
+        use std::io::Write;
+        let mut output = io::stdout().lock();
+        let mut paths: Vec<_> = paths.into_iter().collect();
+        paths.sort();
+        for path in paths {
+            output.write_all(path.as_os_str().as_encoded_bytes())?;
+            output.write_all(&[0])?;
+        }
+        return Ok(());
+    }
     let cwd = PathUri::from_abs_path(&AbsolutePathBuf::try_from(PathBuf::from(&root))?);
     let mode = ApplyPatchFileUpdateMode::PreserveLineEndings;
     let diagnostic_hunks = parsed.hunks.clone();

@@ -1,4 +1,5 @@
 import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import assert from "node:assert/strict";
@@ -106,7 +107,7 @@ it("builds a new pin or target without reusing another key", async () => {
   }
   assert.equal(builds, 3);
 });
-it("refuses a corrupt binary or changed wrapper instead of silently reusing or rebuilding it", async () => {
+it("refuses a corrupt binary instead of silently reusing or rebuilding it", async () => {
   const options = await fixture();
   const destination = join(options.root, "native/bin");
   const built = await ensureNativePatchArtifact({
@@ -124,10 +125,55 @@ it("refuses a corrupt binary or changed wrapper instead of silently reusing or r
     });
   await writeFile(join(built.artifact, "fungi-apply-patch"), "corrupted");
   await assert.rejects(reuse(), /checksum/);
-  await writeFile(
-    join(built.artifact, "fungi-apply-patch"),
-    "native patch fixture\n",
+});
+it("keys artifacts by wrapper contents across checkouts and rebuilds when they change", async () => {
+  const options = await fixture();
+  const first = join(options.root, "first");
+  const second = join(options.root, "second");
+  const third = join(options.root, "third");
+  const changed = join(options.root, "changed");
+  const initial = await ensureNativePatchArtifact({
+    ...options,
+    destination: first,
+    build: () => compiler(first, options.target),
+  });
+  await writeFile(second + ".rs", "pinned wrapper");
+  const hit = await ensureNativePatchArtifact({
+    ...options,
+    wrapper: second + ".rs",
+    destination: second,
+    build: () => {
+      throw new Error("Identical wrapper bytes must reuse the artifact");
+    },
+  });
+  assert.equal(hit.kind, "hit");
+  assert.equal(hit.artifact, initial.artifact);
+  assert.equal(
+    initial.artifact,
+    join(
+      options.cacheRoot,
+      options.pin.version,
+      options.target,
+      createHash("sha256").update("pinned wrapper").digest("hex"),
+      "artifact",
+    ),
   );
+
   await writeFile(options.wrapper, "changed wrapper");
-  await assert.rejects(reuse(), /does not match/);
+  const rebuilt = await ensureNativePatchArtifact({
+    ...options,
+    destination: changed,
+    build: () => compiler(changed, options.target),
+  });
+  assert.equal(rebuilt.kind, "built");
+  assert.notEqual(rebuilt.artifact, initial.artifact);
+  const repeat = await ensureNativePatchArtifact({
+    ...options,
+    destination: third,
+    build: () => {
+      throw new Error("Unchanged wrapper bytes must reuse the new artifact");
+    },
+  });
+  assert.equal(repeat.kind, "hit");
+  assert.equal(repeat.artifact, rebuilt.artifact);
 });

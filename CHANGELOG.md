@@ -1,5 +1,18 @@
 # @fungi.computer/cordyceps
 
+## 0.4.0
+
+### Minor Changes
+
+- Changes since 0.3.1:
+
+  - feat(local): enforce Linux permission sandbox profiles
+  - fix(repo): keep native builds on lent tool homes only
+  - fix(cordyceps): build native patch with the pinned rustc and cache home
+  - fix(local): key native patch cache by wrapper digest
+  - fix(truffle): check protected Files targets before and after approval
+  - fix(local): align Codex-style Git gates and docs
+
 ## 0.3.1
 
 ### Patch Changes

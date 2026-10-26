@@ -4,16 +4,36 @@
 // image's builder stage) installs Rust through rustup. A non-rustup `cargo`
 // earlier on `PATH` (for example Homebrew's) rejects the `+toolchain`
 // directive, so the build asks rustup's ordinary interface for the pinned
-// toolchain's `cargo` explicitly.
+// toolchain's `cargo` explicitly. Cargo itself still resolves `rustc` from
+// `PATH`, so a Homebrew `rustc` listed first would compile with the wrong
+// compiler; the invocation pins `RUSTC` to the toolchain's own compiler too.
 import { spawnSync } from "node:child_process";
 
 /**
- * Builds the `{ command, args }` cargo invocation for the pinned toolchain.
+ * Builds the `{ command, args, env }` cargo invocation for the pinned
+ * toolchain. `env` carries `RUSTC` and must be merged into the child's
+ * environment.
  *
  * @param {{ toolchain: string, cargoArgs: string[] }} options
  */
 export function selectCargoInvocation({ toolchain, cargoArgs }) {
-  return { command: "rustup", args: ["run", toolchain, "cargo", ...cargoArgs] };
+  const which = spawnSync(
+    "rustup",
+    ["which", "--toolchain", toolchain, "rustc"],
+    {
+      encoding: "utf8",
+    },
+  );
+  if (which.error) throw which.error;
+  if (which.status !== 0)
+    throw new Error(
+      `rustup could not locate the Rust ${toolchain} toolchain's rustc: ${which.stderr.trim()}`,
+    );
+  return {
+    command: "rustup",
+    args: ["run", toolchain, "cargo", ...cargoArgs],
+    env: { RUSTC: which.stdout.trim() },
+  };
 }
 
 /**

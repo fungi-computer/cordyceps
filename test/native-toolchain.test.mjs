@@ -1,5 +1,12 @@
 import { spawnSync } from "node:child_process";
-import { chmod, mkdtemp, rm, writeFile } from "node:fs/promises";
+import {
+  chmod,
+  mkdir,
+  mkdtemp,
+  readFile,
+  rm,
+  writeFile,
+} from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { delimiter, dirname, join } from "node:path";
 import process from "node:process";
@@ -47,6 +54,52 @@ it("selects rustup's ordinary toolchain-run interface", () => {
   });
   assert.equal(command, "rustup");
   assert.deepEqual(args, ["run", "1.98.1", "cargo", "build", "--release"]);
+});
+
+it("pins RUSTC so a foreign rustc earlier on PATH never compiles the build", async () => {
+  const root = await mkdtemp(join(tmpdir(), "foreign-rustc-"));
+  fixtures.push(root);
+  const shimDir = join(root, "bin");
+  const marker = join(root, "foreign-rustc-ran");
+  await mkdir(shimDir);
+  // Mirrors Homebrew's older rustc listed before rustup's proxies.
+  await writeFile(
+    join(shimDir, "rustc"),
+    `#!/bin/sh\ncat >/dev/null 2>&1 </dev/null\necho ran > ${JSON.stringify(marker)}\necho 'rustc 1.84.0 (homebrew)'\nexit 1\n`,
+  );
+  await chmod(join(shimDir, "rustc"), 0o755);
+  const crate = join(root, "crate");
+  await mkdir(join(crate, "src"), { recursive: true });
+  await writeFile(
+    join(crate, "Cargo.toml"),
+    '[package]\nname = "pin-probe"\nversion = "0.0.0"\nedition = "2021"\n',
+  );
+  await writeFile(join(crate, "src", "main.rs"), "fn main() {}\n");
+
+  const { command, args, env } = selectCargoInvocation({
+    toolchain: "1.98.1",
+    cargoArgs: [
+      "build",
+      "--offline",
+      "--manifest-path",
+      join(crate, "Cargo.toml"),
+    ],
+  });
+  assert.match(
+    spawnSync(env.RUSTC, ["--version"], { encoding: "utf8" }).stdout,
+    /^rustc 1\.98\.1 /u,
+  );
+  const built = spawnSync(command, args, {
+    env: {
+      ...process.env,
+      ...env,
+      PATH: [shimDir, realRustupDir, process.env.PATH].join(delimiter),
+      CARGO_TARGET_DIR: join(root, "target"),
+    },
+    encoding: "utf8",
+  });
+  assert.equal(built.status, 0, built.stderr);
+  await assert.rejects(readFile(marker), { code: "ENOENT" });
 });
 
 it("ensureNativeHostToolchain passes with the real installed 1.98.1 toolchain", () => {

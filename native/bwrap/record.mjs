@@ -19,6 +19,13 @@ await writeFile(
   resolve(output, "fungi-seccomp.bpf.sha256"),
   `${seccompSha256}\n`,
 );
+const workspaceSeccompSha256 = createHash("sha256")
+  .update(await readFile(resolve(output, "fungi-seccomp-workspace.bpf")))
+  .digest("hex");
+await writeFile(
+  resolve(output, "fungi-seccomp-workspace.bpf.sha256"),
+  `${workspaceSeccompSha256}\n`,
+);
 await copyFile(
   "/source/vendor/LICENSE.sandbox-runtime",
   resolve(output, "LICENSE.sandbox-runtime"),
@@ -47,7 +54,11 @@ await writeFile(
       platform,
       upstream: bwrapPin,
       sha256,
-      seccomp: { generator: seccompPin, sha256: seccompSha256 },
+      seccomp: {
+        generator: seccompPin,
+        readOnlySha256: seccompSha256,
+        workspaceSha256: workspaceSeccompSha256,
+      },
       packages: [
         {
           name: "sandbox-runtime-seccomp-generator",

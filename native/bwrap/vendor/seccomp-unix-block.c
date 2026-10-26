@@ -157,7 +157,8 @@ int main(int argc, char *argv[]) {
     const char *output_file = argv[1];
     const char *arch_name = (argc >= 3) ? argv[2] : NULL;
     const char *rule_set = (argc == 4) ? argv[3] : "unix";
-    if (strcmp(rule_set, "unix") != 0 && strcmp(rule_set, "namespaces") != 0) {
+    if (strcmp(rule_set, "unix") != 0 && strcmp(rule_set, "workspace") != 0 &&
+        strcmp(rule_set, "namespaces") != 0) {
         fprintf(stderr, "Error: Unknown rule set '%s'\n", rule_set);
         return 1;
     }
@@ -209,12 +210,14 @@ int main(int argc, char *argv[]) {
      * int, so the kernel ignores the upper 32 bits of the register. A plain
      * SCMP_CMP_EQ would compare all 64 bits and miss calls where the upper bits
      * are set. */
-    rc = seccomp_rule_add(ctx, SCMP_ACT_ERRNO(EPERM), SCMP_SYS(socket), 1,
-                          SCMP_A0(SCMP_CMP_MASKED_EQ, 0xffffffff, AF_UNIX));
-    if (rc < 0) {
-        fprintf(stderr, "Error: Failed to add seccomp rule: %s\n", strerror(-rc));
-        seccomp_release(ctx);
-        return 1;
+    if (strcmp(rule_set, "unix") == 0) {
+        rc = seccomp_rule_add(ctx, SCMP_ACT_ERRNO(EPERM), SCMP_SYS(socket), 1,
+                              SCMP_A0(SCMP_CMP_MASKED_EQ, 0xffffffff, AF_UNIX));
+        if (rc < 0) {
+            fprintf(stderr, "Error: Failed to add seccomp rule: %s\n", strerror(-rc));
+            seccomp_release(ctx);
+            return 1;
+        }
     }
 
     /* Add rule to block socket(AF_VSOCK, ...) */

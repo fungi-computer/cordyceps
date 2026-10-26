@@ -10,6 +10,8 @@
 // container behind. Any other host builds its own target natively through
 // rustup. One immutable artifact per pin, wrapper and target is cached under
 // ${XDG_CACHE_HOME:-~/.cache}/fungi/native-patch and restored on later calls.
+// Turbo's strict environment lends only tool homes, so under Turbo the cache
+// follows HOME; a caller that wants a private cache sets a private HOME.
 import { spawn } from "node:child_process";
 import { homedir } from "node:os";
 import { resolve } from "node:path";

@@ -50,7 +50,7 @@ async function digest(path) {
     .digest("hex");
 }
 
-/** One immutable artifact per Codex pin/target, shared by every checkout and updater. */
+/** One immutable artifact per Codex pin/target/wrapper, shared by every checkout and updater. */
 export async function ensureNativePatchArtifact({
   cacheRoot,
   pin: inputPin,
@@ -62,7 +62,7 @@ export async function ensureNativePatchArtifact({
   const pin = pinSchema.parse(inputPin);
   const target = targetSchema.parse(inputTarget);
   const wrapperSha256 = await digest(wrapper);
-  const key = join(cacheRoot, pin.version, target);
+  const key = join(cacheRoot, pin.version, target, wrapperSha256);
   const artifact = join(key, "artifact");
   await mkdir(key, { recursive: true, mode: 0o700 });
   async function published() {
@@ -82,7 +82,7 @@ export async function ensureNativePatchArtifact({
       receipt.wrapperSha256 !== wrapperSha256
     )
       throw new Error(
-        `Cached patch artifact does not match this pin or wrapper: ${artifact}. Use a new pin before rebuilding.`,
+        `Cached patch artifact does not match this pin or wrapper: ${artifact}. The artifact was not used or rebuilt.`,
       );
     if (
       (await digest(join(artifact, "fungi-apply-patch"))) !==

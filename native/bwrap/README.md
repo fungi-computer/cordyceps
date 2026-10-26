@@ -73,17 +73,17 @@ directory. Only controlled TCP/Unix listeners are created, and they close in
 mutated.
 
 The prepared probe checks confined writes, outside-write refusal, `.fungi` and
-Git config/hooks protection, a real allowed Git add/commit, private `/run` and
+Git administration write refusal (including add/commit), private `/run` and
 external XDG runtime directory, absent session locators, and refusal to reach
 the controlled host TCP/Unix listeners. Namespace denial must fail the proof,
 not trigger bare execution or a skipped success.
 
 This is a **direct backend proof fixture**, not foreground/background lifecycle
-or Files acceptance. Linked-worktree Git protection, immovable Git directories,
-shell/direct command owners, process-group cleanup, hidden-run detachment,
-installed-package resolution and all affected gates still require qualification.
-The argv/digest unit tests do not establish any of these kernel properties. Even
-a passing backend probe alone does not authorize changing readiness.
+or Files acceptance. Linked-worktree Git protection, shell/direct command
+owners, process-group cleanup, hidden-run detachment, installed-package
+resolution and all affected gates still require qualification. The argv/digest
+unit tests do not establish any of these kernel properties. Even a passing
+backend probe alone does not authorize changing readiness.
 
 ## Exact remaining gap
 

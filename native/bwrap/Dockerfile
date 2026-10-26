@@ -37,6 +37,8 @@ RUN test "$(getconf GNU_LIBC_VERSION)" = "glibc 2.35" \
     && cc -O2 -Wall -Wextra -Werror /source/vendor/seccomp-unix-block.c -lseccomp -o /compiled/seccomp-generator \
     && /compiled/seccomp-generator /out/fungi-seccomp.bpf \
       $(if [ "$TARGET" = linux-arm64 ]; then printf aarch64; else printf x86_64; fi) unix \
+    && /compiled/seccomp-generator /out/fungi-seccomp-workspace.bpf \
+      $(if [ "$TARGET" = linux-arm64 ]; then printf aarch64; else printf x86_64; fi) workspace \
     && chmod 0755 /out/fungi-bwrap \
     && patchelf --print-needed /out/fungi-bwrap > /needed \
     && while read -r lib; do \
