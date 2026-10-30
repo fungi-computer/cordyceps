@@ -92,7 +92,8 @@ console.log(cli);
 
 The package exports `./cli`, which resolves to the built CommonJS daemon, and
 `./native/apply-patch/*`, the engine's source and builder, with the
-`fungi-apply-patch-build` bin. The daemon's runtime configuration is read from
+`fungi-apply-patch-build` bin. It also exports `./native/bwrap/*` with the
+`fungi-bwrap-build` bin. The daemon's runtime configuration is read from
 environment variables such as `PORT`, `MOUNT_POINT`, `FUSE_MOUNT`, and optional
 `UPSTREAM_URL`. The
 [`upstream/computerd/README.md`](upstream/computerd/README.md),
