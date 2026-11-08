@@ -1,5 +1,14 @@
 # @fungi.computer/cordyceps
 
+## 0.4.1
+
+### Patch Changes
+
+- Changes since 0.4.0:
+
+  - fix(cordyceps): wait for the native-patch cache lock while its holder lives
+  - fix(docs): build each package before its own docs check
+
 ## 0.4.0
 
 ### Minor Changes

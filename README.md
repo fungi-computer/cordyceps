@@ -9,10 +9,14 @@ daemon as its workspace daemon and compiles the engine for its own platform.
 
 ## Install or set up
 
-Install `@fungi.computer/cordyceps` from its package tarball. From the
-repository root, run `pnpm install --frozen-lockfile`. The package build uses
-esbuild and produces `packages/cordyceps/dist/computerd.cjs`; Node 22.13 or
-newer runs the bundle.
+```sh
+npm install @fungi.computer/cordyceps
+```
+
+Node 22.13 or newer runs the bundled `dist/computerd.cjs`. Spore and the
+Computer image already include Cordyceps; install it directly only when you
+compose your own Computer host. In the repository, the package build uses
+esbuild after `pnpm install --frozen-lockfile`.
 
 ## Native patch engine
 
@@ -140,6 +144,3 @@ consumer, checks the exact shipped files, runs the public runtime fixture and
 compiles every JavaScript entrypoint with strict NodeNext and no library-check
 skip. This qualification does not publish npm releases or push a repository
 split.
-
-See [LICENSE](LICENSE) for the license and the package manifest for its public
-repository destination.

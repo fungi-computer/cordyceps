@@ -114,10 +114,12 @@ export async function ensureNativePatchArtifact({
   }
   if (await published()) return restore("hit");
   // Compilation runs in an asynchronous child, so the maintained lock heartbeat stays live.
+  // Wait as long as the holder heartbeats: a contended box can compile for
+  // longer than any fixed retry budget, and a dead holder's lock goes stale.
   const release = await lockfile.lock(key, {
     stale: 120_000,
     update: 20_000,
-    retries: { retries: 600, factor: 1.5, minTimeout: 50, maxTimeout: 1_000 },
+    retries: { forever: true, factor: 1.5, minTimeout: 50, maxTimeout: 1_000 },
   });
   let staging;
   try {
