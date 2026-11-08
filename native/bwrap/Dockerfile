@@ -17,9 +17,11 @@ RUN if [ "$TARGET" = linux-arm64 ]; then \
 # prefer_static is a maintained Meson option newer than Jammy's Meson.
 RUN pip3 install --no-cache-dir meson==1.10.2
 COPY --from=node:24.20.0-trixie-slim@sha256:a747ad80c8a161b650d79a6da9c422005b91148b18b8d2c669eb5a0b7c07e600 /usr/local/bin/node /usr/local/bin/node
-ARG SOURCE_URL
 ARG SOURCE_SHA256
-RUN mkdir /upstream && curl -fL "$SOURCE_URL" -o /source.tar.xz \
+# build.mjs supplies the pinned tarball from its host cache (build context
+# "upstream"); the build itself fetches nothing.
+COPY --from=upstream source.tar.xz /source.tar.xz
+RUN mkdir /upstream \
     && printf '%s  /source.tar.xz\n' "$SOURCE_SHA256" | sha256sum -c - \
     && tar -xJf /source.tar.xz --strip-components=1 -C /upstream
 COPY . /source

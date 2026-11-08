@@ -53,6 +53,12 @@ otherwise its own `native/bin`, and verifies the digest each use. No PATH
 fallback exists. Packaging and installed-package resolution still need real
 artifact qualification.
 
+The build fetches the pinned upstream tarball once into
+`${XDG_CACHE_HOME:-~/.cache}/fungi/bwrap/<sha256>/source.tar.xz`, verifies it
+against the pin, and hands it to Docker as the `upstream` build context; the
+Docker build itself fetches nothing, so a pruned build cache or a GitHub outage
+costs nothing once the tarball is cached.
+
 ## Prepared proof commands — only after a separate heavy grant
 
 From the worktree root, under the granted native-build/proof lease:

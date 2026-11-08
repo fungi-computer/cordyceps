@@ -1,5 +1,15 @@
 # @fungi.computer/cordyceps
 
+## 0.4.2
+
+### Patch Changes
+
+- Changes since 0.4.1:
+
+  - fix(cordyceps): use globalThis.fetch in the bwrap source build
+  - fix(cordyceps): build bubblewrap from a host-cached pinned tarball
+  - fix(cordyceps): retry the pinned bubblewrap source download
+
 ## 0.4.1
 
 ### Patch Changes
